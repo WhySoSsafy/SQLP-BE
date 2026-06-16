@@ -2,7 +2,7 @@ from datetime import date
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +11,7 @@ from study.models import StudySession
 from study.serializers import SessionInputSerializer
 from study.services.serialize import session_detail, session_summary
 from study.services.session_create import create_session
+from study.services.wrong_answers import wrong_answer_queryset, serialize_wrong_answer
 
 
 def _parse_date_param(value, field):
@@ -67,6 +68,36 @@ class SessionDetailView(APIView):
     def delete(self, request, session_id):
         self._get_session(request, session_id).delete()
         return Response({"ok": True})
+
+
+class WrongAnswerListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = wrong_answer_queryset(request.user.group)
+        return Response([serialize_wrong_answer(pp) for pp in qs])
+
+
+class WrongAnswerDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, wrong_answer_id):
+        done = request.data.get("done")
+        if not isinstance(done, bool):
+            raise ValidationError({"done": ["불리언 값이 필요합니다."]})
+        # wrong_answer_id is "{problem_id}::{name}"; slugs use '-', never '::',
+        # so splitting on the first '::' deterministically recovers both parts.
+        parts = wrong_answer_id.split("::", 1)
+        if len(parts) != 2:
+            raise NotFound("오답노트를 찾을 수 없습니다.")
+        problem_id, name = parts
+        pp = get_object_or_404(
+            wrong_answer_queryset(request.user.group),
+            problem_id=problem_id, name=name,
+        )
+        pp.done = done
+        pp.save(update_fields=["done"])
+        return Response({"ok": True, "id": wrong_answer_id, "done": pp.done})
 
 
 class ValidateView(APIView):
