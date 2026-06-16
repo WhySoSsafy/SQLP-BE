@@ -12,6 +12,7 @@ from analytics.services.recommendations import review_recommendations
 from analytics.services.dashboard import dashboard_summary
 from analytics.services.calendar import calendar_data
 from analytics.services.comparison import study_comparison
+from analytics.services.reports import growth_report
 
 
 class WeakConceptsView(APIView):
@@ -78,3 +79,11 @@ class ProblemAnalysisView(APIView):
     def get(self, request):
         qs = ProblemAnalysis.objects.filter(group=request.user.group)
         return Response(ProblemAnalysisItemSerializer(qs, many=True).data)
+
+
+class GrowthReportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        period = request.query_params.get("period", "monthly")
+        return Response(growth_report(request.user.group, period))
