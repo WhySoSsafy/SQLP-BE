@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +9,7 @@ from rest_framework.views import APIView
 
 from study.models import StudySession
 from study.serializers import SessionInputSerializer
-from study.services.serialize import session_summary
+from study.services.serialize import session_detail, session_summary
 from study.services.session_create import create_session
 
 
@@ -48,6 +49,24 @@ class SessionListCreateView(APIView):
         session = create_session(request.user.group, serializer.validated_data)
         return Response({"ok": True, "session_id": session.id},
                         status=status.HTTP_201_CREATED)
+
+
+class SessionDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def _get_session(self, request, session_id):
+        return get_object_or_404(
+            StudySession.objects.filter(group=request.user.group)
+            .prefetch_related("problems__participants", "problems__concepts"),
+            id=session_id,
+        )
+
+    def get(self, request, session_id):
+        return Response(session_detail(self._get_session(request, session_id)))
+
+    def delete(self, request, session_id):
+        self._get_session(request, session_id).delete()
+        return Response({"ok": True})
 
 
 class ValidateView(APIView):
