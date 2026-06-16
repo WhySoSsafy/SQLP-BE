@@ -1,9 +1,12 @@
 from django.utils import timezone
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from analytics.models import ProblemAnalysis
+from analytics.serializers import ProblemAnalysisBulkSerializer, ProblemAnalysisItemSerializer
 from analytics.services.weak_concepts import weak_concepts
 from analytics.services.recommendations import review_recommendations
 from analytics.services.dashboard import dashboard_summary
@@ -57,3 +60,21 @@ class StudyComparisonView(APIView):
         if not session_id:
             raise ValidationError({"session_id": ["필수 값입니다."]})
         return Response(study_comparison(request.user.group, session_id))
+
+
+class ProblemAnalysisView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ProblemAnalysisBulkSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        objs = [ProblemAnalysis(group=request.user.group, book=data["book"], **p)
+                for p in data["problems"]]
+        ProblemAnalysis.objects.bulk_create(objs)
+        return Response({"ok": True, "created_count": len(objs)},
+                        status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        qs = ProblemAnalysis.objects.filter(group=request.user.group)
+        return Response(ProblemAnalysisItemSerializer(qs, many=True).data)
