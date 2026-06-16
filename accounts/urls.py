@@ -1,2 +1,7 @@
-# Wired in Phase 1 (Tasks 1.2, 1.3). Stub for scaffold boot.
-urlpatterns = []
+from django.urls import path
+from accounts.views import RegisterView, MeView
+
+urlpatterns = [
+    path("auth/register/", RegisterView.as_view()),
+    path("users/me/", MeView.as_view()),
+]
