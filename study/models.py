@@ -12,6 +12,7 @@ class StudySession(models.Model):
     group = models.ForeignKey(StudyGroup, on_delete=models.CASCADE, related_name="sessions")
     session_date = models.DateField()
     book = models.CharField(max_length=200)
+    speakers = ArrayField(models.CharField(max_length=50), default=list, blank=True)
     dedup_key = models.CharField(max_length=64, null=True, blank=True, unique=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -32,6 +32,9 @@ def create_session(group, data):
     if StudySession.objects.filter(dedup_key=key).exists():
         raise DuplicateSession()
 
+    participant_names = {pp["name"] for p in data["problems"] for pp in p["participants"]}
+    speakers = sorted(set(data["speakers"]) | participant_names)
+
     session = None
     for _ in range(_MAX_SLUG_ATTEMPTS):
         session_id = build_session_id(data["session_date"], data["book"], numbers)
@@ -39,7 +42,8 @@ def create_session(group, data):
             with transaction.atomic():  # savepoint: only this INSERT rolls back on clash
                 session = StudySession.objects.create(
                     id=session_id, group=group,
-                    session_date=data["session_date"], book=data["book"], dedup_key=key,
+                    session_date=data["session_date"], book=data["book"],
+                    dedup_key=key, speakers=speakers,
                 )
             break
         except IntegrityError:

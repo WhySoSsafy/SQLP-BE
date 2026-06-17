@@ -20,7 +20,7 @@ def test_list_returns_summary_fields():
     assert row["problem_count"] == 1
     assert row["review_required_count"] == 1
     assert "average_understanding" in row
-    assert set(row["speakers"]) >= {"세은"}
+    assert set(row["speakers"]) == {"세은", "수철"}
     assert "created_at" in row
 
 def test_list_search_filters_by_book():

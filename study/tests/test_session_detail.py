@@ -18,7 +18,7 @@ def test_detail_returns_nested_problems():
     assert body["id"] == sid
     assert body["session_date"] == "2026-06-13"
     assert body["book"] == "SQLP 실전문제"
-    assert set(body["speakers"]) >= {"세은"}
+    assert set(body["speakers"]) == {"세은", "수철"}
     prob = body["problems"][0]
     assert prob["problem_number"] == 1
     assert set(prob["concepts"]) == {"JOIN", "OUTER JOIN"}
