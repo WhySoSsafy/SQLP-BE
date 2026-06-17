@@ -1,2 +1,7 @@
-# Wired in Phase 4 (Task 5.3). Stub for scaffold boot.
-urlpatterns = []
+from django.urls import path
+from concepts.views import ConceptListView, ConceptDetailView
+
+urlpatterns = [
+    path("concepts/", ConceptListView.as_view()),
+    path("concepts/<int:concept_id>/", ConceptDetailView.as_view()),
+]
