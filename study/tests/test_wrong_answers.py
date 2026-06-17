@@ -75,6 +75,15 @@ def test_mark_done_false_unsets():
     assert resp.status_code == 200
     assert resp.json()["done"] is False
 
+def test_mark_done_non_object_body_returns_400():
+    c = _client()
+    c.post("/api/sessions/", PAYLOAD, format="json")
+    wid = c.get("/api/wrong-answers/").json()[0]["id"]
+    # a JSON array body (not an object) must yield 400, not 500
+    resp = c.patch(f"/api/wrong-answers/{wid}/", [1, 2, 3], format="json")
+    assert resp.status_code == 400
+    assert resp.json()["code"] == "VALIDATION_ERROR"
+
 def test_mark_done_name_with_slash_is_routable():
     import copy
     c = _client()

@@ -82,6 +82,8 @@ class WrongAnswerDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, wrong_answer_id):
+        if not isinstance(request.data, dict):
+            raise ValidationError({"detail": ["JSON 객체 본문이 필요합니다."]})
         done = request.data.get("done")
         if not isinstance(done, bool):
             raise ValidationError({"done": ["불리언 값이 필요합니다."]})
