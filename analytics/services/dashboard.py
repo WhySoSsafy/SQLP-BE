@@ -23,9 +23,13 @@ def _study_streak(group):
 
 
 def dashboard_summary(group):
-    week_ago = timezone.now().date() - timedelta(days=7)
+    today = timezone.now().date()
+    week_ago = today - timedelta(days=7)
     weekly_problems = Problem.objects.filter(
-        session__group=group, session__session_date__gte=week_ago).count()
+        session__group=group,
+        session__session_date__gte=week_ago,
+        session__session_date__lte=today,
+    ).count()
     review_required = ProblemParticipant.objects.filter(
         problem__session__group=group, review_required=True).count()
     all_scores = [participant_score(pp.understanding, pp.is_correct)

@@ -82,3 +82,19 @@ def test_study_streak_zero_when_gap_before_yesterday():
     # only a session 2 days ago: neither today nor yesterday => streak 0
     StudySession.objects.create(id="gap-1", group=g, session_date=today - timedelta(days=2), book="b")
     assert _study_streak(g) == 0
+
+
+def test_dashboard_weekly_excludes_future_sessions():
+    from datetime import timedelta
+    from django.utils import timezone
+    from accounts.models import StudyGroup
+    from study.models import StudySession, Problem
+    from analytics.services.dashboard import dashboard_summary
+    g = StudyGroup.get_default()
+    today = timezone.now().date()
+    for i, d in enumerate([today, today + timedelta(days=3)]):
+        s = StudySession.objects.create(id=f"dw{i}", group=g, session_date=d, book="b")
+        Problem.objects.create(id=f"dw{i}-p1", session=s, problem_number=1, subject_area="x")
+    data = dashboard_summary(g)
+    # only the today session counts toward the weekly total; the +3-day future one does not
+    assert data["weeklyProblemCount"] == 1
