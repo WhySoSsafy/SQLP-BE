@@ -15,7 +15,7 @@ class ParticipantInputSerializer(serializers.Serializer):
 
 
 class ProblemInputSerializer(serializers.Serializer):
-    problem_number = serializers.IntegerField(min_value=1)
+    problem_number = serializers.IntegerField(min_value=1, max_value=2147483647)
     subject_area = serializers.CharField(max_length=100)
     concepts = serializers.ListField(child=serializers.CharField(max_length=100), required=False, default=list)
     solution_summary = serializers.CharField(required=False, allow_blank=True, default="")

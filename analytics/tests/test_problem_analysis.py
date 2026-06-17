@@ -63,3 +63,13 @@ def test_register_validation_error():
 
 def test_requires_auth():
     assert APIClient().get("/api/problem-analysis/").status_code == 401
+
+def test_problem_analysis_out_of_int_range_fails():
+    c = _client()
+    bad = {"book": "B", "problems": [{
+        "problem_number": 9999999999, "subject_area": "x", "concepts": [],
+        "estimated_difficulty": "중", "frequency": "높음", "priority": 1,
+    }]}
+    resp = c.post("/api/problem-analysis/", bad, format="json")
+    assert resp.status_code == 400
+    assert resp.json()["code"] == "VALIDATION_ERROR"
