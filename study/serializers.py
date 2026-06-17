@@ -31,7 +31,7 @@ class ProblemInputSerializer(serializers.Serializer):
 class SessionInputSerializer(serializers.Serializer):
     session_date = serializers.DateField()
     book = serializers.CharField(max_length=200)
-    speakers = serializers.ListField(child=serializers.CharField(), required=False, default=list)
+    speakers = serializers.ListField(child=serializers.CharField(max_length=50), required=False, default=list)
     problems = ProblemInputSerializer(many=True, allow_empty=False)
 
     def validate_problems(self, value):

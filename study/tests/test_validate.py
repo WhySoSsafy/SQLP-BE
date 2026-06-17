@@ -76,3 +76,11 @@ def test_validate_nonpositive_problem_number_fails():
     resp = _auth_client().post("/api/analysis/validate/", bad, format="json")
     assert resp.status_code == 400
     assert resp.json()["code"] == "VALIDATION_ERROR"
+
+def test_validate_speaker_too_long_fails():
+    import copy
+    bad = copy.deepcopy(PAYLOAD)
+    bad["speakers"] = ["x" * 51]
+    resp = _auth_client().post("/api/analysis/validate/", bad, format="json")
+    assert resp.status_code == 400
+    assert resp.json()["code"] == "VALIDATION_ERROR"

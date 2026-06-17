@@ -56,3 +56,12 @@ def test_participant_linked_to_member_by_name():
 def test_create_requires_auth():
     resp = APIClient().post("/api/sessions/", PAYLOAD, format="json")
     assert resp.status_code == 401
+
+def test_ambiguous_member_name_left_unlinked():
+    c, u = _client()  # u is named "세은" in the default group
+    from accounts.models import User
+    User.objects.create_user(email="dup@b.com", name="세은", password="pw12345")  # same group, same name
+    c.post("/api/sessions/", PAYLOAD, format="json")
+    from study.models import ProblemParticipant
+    pp = ProblemParticipant.objects.get(name="세은")
+    assert pp.member_id is None  # ambiguous name -> not linked

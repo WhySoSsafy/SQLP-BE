@@ -1,4 +1,5 @@
 import hashlib
+from collections import Counter
 
 from django.db import IntegrityError, transaction
 from rest_framework import status
@@ -55,7 +56,11 @@ def create_session(group, data):
     if session is None:
         raise DuplicateSession()
 
-    members = {u.name: u for u in User.objects.filter(group=group)}
+    group_users = list(User.objects.filter(group=group))
+    name_counts = Counter(u.name for u in group_users)
+    # Only link names that unambiguously identify one member; duplicate display
+    # names in a group are left unlinked rather than mislinked to the wrong user.
+    members = {u.name: u for u in group_users if name_counts[u.name] == 1}
     for p in data["problems"]:
         problem = Problem.objects.create(
             id=f"{session_id}-p{p['problem_number']}", session=session,
