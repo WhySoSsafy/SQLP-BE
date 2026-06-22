@@ -505,9 +505,21 @@
 
   GET /api/reports/growth/
 
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 200 OK
+
   쿼리:
 
   ?period=monthly
+
+  기간 파라미터 동작:
+  - period 파라미터는 응답에 echo되기만 하고 실제 날짜 필터링은 없습니다.
+  - 항상 그룹 전체 기간 데이터를 반환합니다 (period 값과 무관하게).
+  - 예: "monthly"를 전달하면 응답에 "period": "monthly"로 포함되지만, 데이터는 모든 시간대를 포함합니다.
+
+  응답 데이터 설명:
+  - improvedConcepts: averageScore >= 70인 개념 목록 (성장한 개념)
+  - stillWeakConcepts: averageScore < 50인 개념 목록 (여전히 약한 개념)
 
   응답:
 
@@ -529,3 +541,5 @@
       }
     ]
   }
+
+  검증 완료: 프론트 성장 리포트 화면에 필요한 데이터 반환 확인 (2026-06-22)
