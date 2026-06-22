@@ -356,9 +356,32 @@
 
   GET /api/study-comparison/
 
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 200 OK
+
   쿼리:
 
   ?session_id=2026-06-13-sqlp-실전문제-1-2
+
+  session_id 파라미터 필수. 누락 시:
+  HTTP 400
+  {
+    "ok": false,
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다.",
+    "errors": [
+      {
+        "path": "$.session_id",
+        "message": "필수 값입니다."
+      }
+    ]
+  }
+
+  세션 없을 시: HTTP 404
+
+  weakConcepts 산출 기준: concepts_missed 목록 + 오답/복습필요 문제의 개념명
+
+  검증 완료: 응답 형태 프론트 요구사항 충족 확인 (2026-06-22)
 
   응답:
 
