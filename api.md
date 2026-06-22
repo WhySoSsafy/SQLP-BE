@@ -40,6 +40,25 @@
     }
   }
 
+  토큰 유효기간:
+  - access token: 1시간 (만료 후 refresh 엔드포인트로 갱신)
+  - refresh token: 7일
+
+  토큰 갱신:
+  POST /api/auth/refresh/
+
+  요청:
+
+  {
+    "refresh": "jwt-refresh-token"
+  }
+
+  응답:
+
+  {
+    "access": "new-jwt-access-token"
+  }
+
   2. 회원가입
 
   POST /api/auth/register/
