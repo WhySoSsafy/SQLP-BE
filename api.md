@@ -447,6 +447,7 @@
       {
         "sessionId": "2026-06-13-sqlp-실전문제-1-2",
         "problemNumber": 1,
+        "person": "세은",
         "understanding": "애매",
         "reviewRequired": true
       }
@@ -454,6 +455,13 @@
     "myUnderstanding": 40,
     "reviewRecommended": true
   }
+
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 200 OK
+
+  개념 없을 시: HTTP 404
+
+  검증 완료: relatedProblems에 person 필드 포함 확인 — 스펙 수정 완료 (2026-06-22)
 
   18. 문제 난이도/주제 분석 등록
 
