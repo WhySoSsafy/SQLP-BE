@@ -145,12 +145,16 @@
 
   GET /api/sessions/
 
-  쿼리 옵션:
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 200 OK
 
-  ?search=SQLP
-  ?understanding=high
-  ?date_from=2026-06-01
-  ?date_to=2026-06-30
+  쿼리 파라미터 상세:
+  - search: book 필드에 부분 일치 (대소문자 무관)
+  - understanding=high: average_understanding >= 70인 세션만
+  - understanding=low: average_understanding < 50인 세션만
+  - date_from / date_to: YYYY-MM-DD 형식. 잘못된 형식 시 HTTP 400
+
+  검증 완료: 실제 학습 기록 기반 응답 정상 동작 확인 (2026-06-22)
 
   응답:
 
