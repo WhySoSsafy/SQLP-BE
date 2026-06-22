@@ -124,9 +124,12 @@
 
   POST /api/sessions/
 
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 201 Created
+
   요청은 검증 API와 동일한 원본 JSON.
 
-  응답:
+  성공 응답:
 
   {
     "ok": true,
@@ -135,10 +138,21 @@
 
   중복 응답:
 
+  HTTP 409
   {
     "ok": false,
     "code": "DUPLICATE_SESSION",
     "message": "같은 날짜, 문제집명, 문제번호 구성을 가진 학습 세션이 이미 저장되어 있습니다."
+  }
+
+  에러 응답 (유효성 오류):
+
+  HTTP 400
+  {
+    "ok": false,
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다.",
+    "errors": [...]
   }
 
   6. 학습 세션 목록
