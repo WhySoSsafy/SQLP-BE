@@ -63,6 +63,30 @@
     }
   }
 
+  상태 코드: 201 Created
+
+  에러 응답 (이메일 중복):
+  HTTP 400
+  {
+    "ok": false,
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다.",
+    "errors": [
+      { "path": "$.email", "message": "이 필드를 가진 accounts user가(이) 이미 존재합니다." }
+    ]
+  }
+
+  에러 응답 (비밀번호 8자 미만):
+  HTTP 400
+  {
+    "ok": false,
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다.",
+    "errors": [
+      { "path": "$.password", "message": "이 필드의 글자 수가 8 이상인지 확인하십시오." }
+    ]
+  }
+
   3. 내 정보 조회
 
   GET /api/users/me/
