@@ -80,6 +80,9 @@
 
   POST /api/analysis/validate/
 
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 200 OK
+
   요청:
 
   {
@@ -118,6 +121,17 @@
       "participantCount": 2,
       "conceptTags": ["JOIN", "OUTER JOIN"]
     }
+  }
+
+  에러 응답 (필수 필드 누락 또는 값 오류):
+  HTTP 400
+  {
+    "ok": false,
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다.",
+    "errors": [
+      { "path": "$.problems[0].subject_area", "message": "허용되지 않는 과목입니다." }
+    ]
   }
 
   5. 학습 세션 생성
