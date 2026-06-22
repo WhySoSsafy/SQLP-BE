@@ -40,6 +40,27 @@
     }
   }
 
+  상태 코드: 200 OK
+
+  에러 응답 (잘못된 자격증명):
+  HTTP 401
+  {
+    "ok": false,
+    "code": "no_active_account",
+    "message": "No active account found with the given credentials"
+  }
+
+  에러 응답 (필드 누락):
+  HTTP 400
+  {
+    "ok": false,
+    "code": "VALIDATION_ERROR",
+    "message": "입력값이 올바르지 않습니다.",
+    "errors": [
+      { "path": "$.email", "message": "이 필드는 필수 항목입니다." }
+    ]
+  }
+
   2. 회원가입
 
   POST /api/auth/register/
