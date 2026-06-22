@@ -17,6 +17,15 @@
     ]
   }
 
+  JSON 데이터 전송 방식:
+  AI 분석 결과 JSON은 파일 업로드가 아닌 request body로 직접 전송.
+
+  Content-Type: application/json
+  Body: { ...세션 데이터... }
+
+  파일 업로드(multipart/form-data)는 지원하지 않음.
+  프론트엔드에서 JSON 파일을 읽은 경우, 파일 객체가 아닌 파싱된 JSON 객체를 body로 전송.
+
   1. 로그인
 
   POST /api/auth/login/
