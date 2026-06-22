@@ -329,6 +329,9 @@
 
   GET /api/calendar/
 
+  인증: 필요 (Authorization: Bearer <access_token>)
+  상태 코드: 200 OK
+
   쿼리:
 
   ?year=2026&month=6
@@ -351,6 +354,13 @@
     "monthlyProblemCount": 3,
     "studyStreak": 1
   }
+
+  필드 상세:
+  - weeklyProblemCount: 오늘 기준 최근 7일간 문제 수 (조회 월 기준 아님)
+  - studyStreak: 조회 월에서 학습한 날의 수 (연속일 계산 아님)
+  - mainConcepts: 해당 날짜에서 가장 많이 등장한 개념 최대 3개
+
+  검증 완료: 실제 DB 기반 응답 정상 동작 확인 (2026-06-22)
 
   15. 스터디원 비교
 
