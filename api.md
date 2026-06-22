@@ -17,6 +17,27 @@
     ]
   }
 
+  인증 헤더:
+  로그인/회원가입을 제외한 모든 API에 Authorization 헤더 필요.
+
+  Authorization: Bearer <access_token>
+
+  예시:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+  헤더 누락 또는 만료 토큰 사용 시:
+  HTTP 401
+  {
+    "ok": false,
+    "code": "not_authenticated",
+    "message": "자격 인증데이터(authentication credentials)가 제공되지 않았습니다."
+  }
+
+  인증 불필요 엔드포인트:
+  - POST /api/auth/login/
+  - POST /api/auth/register/
+  - POST /api/auth/refresh/
+
   1. 로그인
 
   POST /api/auth/login/
