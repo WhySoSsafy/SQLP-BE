@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
     "accounts",
     "study",
     "concepts",
@@ -67,6 +68,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ),
     "EXCEPTION_HANDLER": "common.exceptions.api_exception_handler",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -82,3 +84,10 @@ SCORE_UNDERSTANDING_WEIGHT = 0.7
 SCORE_CORRECT_WEIGHT = 0.3
 WEAK_THRESHOLD = 50
 IMPROVED_THRESHOLD = 70
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SQLP API",
+    "DESCRIPTION": "SQLP 스터디 세션 관리 백엔드 API",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
