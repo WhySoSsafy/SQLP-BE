@@ -7,6 +7,7 @@ from accounts.serializers import RegisterSerializer, UserSerializer, MeSerialize
 from accounts.schema_serializers import RegisterResponseSerializer, MeResponseSerializer
 
 @extend_schema(
+    request=RegisterSerializer,
     responses={201: RegisterResponseSerializer},
 )
 class RegisterView(APIView):
