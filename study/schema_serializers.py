@@ -49,7 +49,9 @@ class SessionSummarySerializer(serializers.Serializer):
     session_date = serializers.DateField()
     problem_count = serializers.IntegerField()
     average_understanding = serializers.FloatField()
+    review_required_count = serializers.IntegerField()
     speakers = serializers.ListField(child=serializers.CharField())
+    created_at = serializers.CharField()
 
 
 class ParticipantDetailSerializer(serializers.Serializer):
@@ -76,6 +78,7 @@ class SessionDetailResponseSerializer(serializers.Serializer):
     book = serializers.CharField()
     session_date = serializers.DateField()
     speakers = serializers.ListField(child=serializers.CharField())
+    created_at = serializers.CharField()
     problems = ProblemDetailSerializer(many=True)
 
 
@@ -94,11 +97,19 @@ class ValidateResponseSerializer(serializers.Serializer):
 
 class WrongAnswerSerializer(serializers.Serializer):
     id = serializers.CharField()
-    problem_number = serializers.IntegerField()
+    sessionId = serializers.CharField()
+    problemId = serializers.CharField()
+    problemNumber = serializers.IntegerField()
+    sessionDate = serializers.CharField()
     book = serializers.CharField()
-    session_date = serializers.DateField()
+    person = serializers.CharField()
+    concepts = serializers.ListField(child=serializers.CharField())
     understanding = serializers.CharField()
-    review_required = serializers.BooleanField()
+    missed = serializers.ListField(child=serializers.CharField())
+    errors = serializers.ListField(child=serializers.CharField())
+    explanation = serializers.CharField()
+    isCorrect = serializers.BooleanField()
+    reviewRequired = serializers.BooleanField()
     done = serializers.BooleanField()
 
 

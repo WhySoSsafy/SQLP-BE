@@ -37,7 +37,7 @@ def _parse_date_param(value, field):
     get=extend_schema(
         parameters=[
             OpenApiParameter("search", str, description="책 제목 또는 참가자명 검색"),
-            OpenApiParameter("understanding", str, enum=["이해", "애매", "모름"], description="이해도 필터"),
+            OpenApiParameter("understanding", str, enum=["high", "low"], description="이해도 필터 (high: 70점 이상, low: 50점 미만)"),
             OpenApiParameter("date_from", str, description="시작 날짜 (YYYY-MM-DD)"),
             OpenApiParameter("date_to", str, description="종료 날짜 (YYYY-MM-DD)"),
         ],

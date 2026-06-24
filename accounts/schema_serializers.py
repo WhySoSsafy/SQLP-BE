@@ -27,3 +27,4 @@ class MeResponseSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     email = serializers.EmailField()
     name = serializers.CharField()
+    profile_label = serializers.CharField()
