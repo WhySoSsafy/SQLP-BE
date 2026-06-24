@@ -17,10 +17,6 @@
     ]
   }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
   인증 헤더:
   로그인/회원가입을 제외한 모든 API에 Authorization 헤더 필요.
 
@@ -41,20 +37,14 @@
   - POST /api/auth/login/
   - POST /api/auth/register/
   - POST /api/auth/refresh/
-=======
-=======
->>>>>>> 0bbf127 (docs(212): confirm understanding choices as 이해/애매/모름 with score mapping)
+
   이해도(understanding) 허용 값:
   - "이해": 완전히 이해함 (점수 100)
   - "애매": 이해했지만 불확실 (점수 50)
   - "모름": 이해하지 못함 (점수 0)
 
   평균 이해도(average_understanding)는 위 점수의 평균값 (0~100).
-<<<<<<< HEAD
->>>>>>> 0bbf127 (docs(212): confirm understanding choices as 이해/애매/모름 with score mapping)
-=======
-=======
->>>>>>> c9afd4e (docs(213): document JSON upload policy — body-based JSON, not file upload)
+
   JSON 데이터 전송 방식:
   AI 분석 결과 JSON은 파일 업로드가 아닌 request body로 직접 전송.
 
@@ -63,12 +53,6 @@
 
   파일 업로드(multipart/form-data)는 지원하지 않음.
   프론트엔드에서 JSON 파일을 읽은 경우, 파일 객체가 아닌 파싱된 JSON 객체를 body로 전송.
-<<<<<<< HEAD
->>>>>>> c9afd4e (docs(213): document JSON upload policy — body-based JSON, not file upload)
-=======
->>>>>>> 0bbf127 (docs(212): confirm understanding choices as 이해/애매/모름 with score mapping)
-=======
->>>>>>> c9afd4e (docs(213): document JSON upload policy — body-based JSON, not file upload)
 
   1. 로그인
 
@@ -93,7 +77,6 @@
     }
   }
 
-<<<<<<< HEAD
   상태 코드: 200 OK
 
   에러 응답 (잘못된 자격증명):
@@ -113,7 +96,8 @@
     "errors": [
       { "path": "$.email", "message": "이 필드는 필수 항목입니다." }
     ]
-=======
+  }
+
   토큰 유효기간:
   - access token: 1시간 (만료 후 refresh 엔드포인트로 갱신)
   - refresh token: 7일
@@ -131,7 +115,6 @@
 
   {
     "access": "new-jwt-access-token"
->>>>>>> 85bae6b (fix(203): verify JWT token issuance — access+refresh both issued correctly, document token lifetimes)
   }
 
   2. 회원가입
