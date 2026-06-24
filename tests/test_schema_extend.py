@@ -48,3 +48,20 @@ def test_wrong_answers_patch_has_request_body():
     assert wa_paths, "wrong-answer detail path not found"
     patch = paths[wa_paths[0]].get("patch", {})
     assert "requestBody" in patch
+
+
+def test_concept_list_response_not_empty():
+    schema = get_schema()
+    get = schema["paths"]["/api/concepts/"]["get"]
+    content = get["responses"]["200"]["content"]["application/json"]["schema"]
+    assert content
+
+
+def test_concept_detail_has_related_problems():
+    schema = get_schema()
+    paths = schema["paths"]
+    detail_paths = [k for k in paths if "concepts" in k and "{" in k]
+    assert detail_paths
+    get = paths[detail_paths[0]]["get"]
+    content = get["responses"]["200"]["content"]["application/json"]["schema"]
+    assert content
