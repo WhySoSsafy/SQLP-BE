@@ -12,6 +12,18 @@ from study.serializers import SessionInputSerializer
 from study.services.serialize import session_detail, session_summary
 from study.services.session_create import create_session
 from study.services.wrong_answers import wrong_answer_queryset, serialize_wrong_answer
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from study.schema_serializers import (
+    SessionCreateRequestSerializer,
+    SessionSummarySerializer,
+    SessionDetailResponseSerializer,
+    SessionCreateResponseSerializer,
+    ValidateResponseSerializer,
+    WrongAnswerSerializer,
+    WrongAnswerUpdateRequestSerializer,
+    WrongAnswerUpdateResponseSerializer,
+    OkResponseSerializer,
+)
 
 
 def _parse_date_param(value, field):
@@ -21,6 +33,21 @@ def _parse_date_param(value, field):
         raise ValidationError({field: ["유효한 날짜(YYYY-MM-DD)가 아닙니다."]})
 
 
+@extend_schema_view(
+    get=extend_schema(
+        parameters=[
+            OpenApiParameter("search", str, description="책 제목 또는 참가자명 검색"),
+            OpenApiParameter("understanding", str, enum=["이해", "애매", "모름"], description="이해도 필터"),
+            OpenApiParameter("date_from", str, description="시작 날짜 (YYYY-MM-DD)"),
+            OpenApiParameter("date_to", str, description="종료 날짜 (YYYY-MM-DD)"),
+        ],
+        responses={200: SessionSummarySerializer(many=True)},
+    ),
+    post=extend_schema(
+        request=SessionCreateRequestSerializer,
+        responses={201: SessionCreateResponseSerializer},
+    ),
+)
 class SessionListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -52,6 +79,10 @@ class SessionListCreateView(APIView):
                         status=status.HTTP_201_CREATED)
 
 
+@extend_schema_view(
+    get=extend_schema(responses={200: SessionDetailResponseSerializer}),
+    delete=extend_schema(responses={200: OkResponseSerializer}),
+)
 class SessionDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -70,6 +101,9 @@ class SessionDetailView(APIView):
         return Response({"ok": True})
 
 
+@extend_schema(
+    responses={200: WrongAnswerSerializer(many=True)},
+)
 class WrongAnswerListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -78,6 +112,10 @@ class WrongAnswerListView(APIView):
         return Response([serialize_wrong_answer(pp) for pp in qs])
 
 
+@extend_schema(
+    request=WrongAnswerUpdateRequestSerializer,
+    responses={200: WrongAnswerUpdateResponseSerializer},
+)
 class WrongAnswerDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -102,6 +140,10 @@ class WrongAnswerDetailView(APIView):
         return Response({"ok": True, "id": wrong_answer_id, "done": pp.done})
 
 
+@extend_schema(
+    request=SessionCreateRequestSerializer,
+    responses={200: ValidateResponseSerializer},
+)
 class ValidateView(APIView):
     permission_classes = [IsAuthenticated]
 
