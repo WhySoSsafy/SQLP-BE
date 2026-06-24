@@ -2,13 +2,11 @@ from rest_framework import serializers
 
 
 class RelatedProblemSerializer(serializers.Serializer):
-    id = serializers.CharField()
-    problem_number = serializers.IntegerField()
-    session_date = serializers.DateField()
-    book = serializers.CharField()
+    sessionId = serializers.CharField()
+    problemNumber = serializers.IntegerField()
     person = serializers.CharField()
     understanding = serializers.CharField()
-    is_correct = serializers.BooleanField()
+    reviewRequired = serializers.BooleanField()
 
 
 class ConceptSummarySerializer(serializers.Serializer):
