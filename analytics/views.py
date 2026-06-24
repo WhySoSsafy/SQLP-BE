@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+
 from analytics.models import ProblemAnalysis
 from analytics.serializers import ProblemAnalysisBulkSerializer, ProblemAnalysisItemSerializer
 from analytics.services.weak_concepts import weak_concepts
@@ -13,8 +15,19 @@ from analytics.services.dashboard import dashboard_summary
 from analytics.services.calendar import calendar_data
 from analytics.services.comparison import study_comparison
 from analytics.services.reports import growth_report
+from analytics.schema_serializers import (
+    WeakConceptSerializer,
+    RecommendationSerializer,
+    DashboardResponseSerializer,
+    CalendarResponseSerializer,
+    StudyComparisonResponseSerializer,
+    GrowthReportResponseSerializer,
+    ProblemAnalysisRequestSerializer,
+    ProblemAnalysisCreateResponseSerializer,
+)
 
 
+@extend_schema(responses={200: WeakConceptSerializer(many=True)})
 class WeakConceptsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -22,6 +35,7 @@ class WeakConceptsView(APIView):
         return Response(weak_concepts(request.user.group))
 
 
+@extend_schema(responses={200: RecommendationSerializer(many=True)})
 class ReviewRecommendationsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -29,6 +43,7 @@ class ReviewRecommendationsView(APIView):
         return Response(review_recommendations(request.user.group))
 
 
+@extend_schema(responses={200: DashboardResponseSerializer})
 class DashboardSummaryView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -36,6 +51,13 @@ class DashboardSummaryView(APIView):
         return Response(dashboard_summary(request.user.group))
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter("year", int, required=True, description="조회 연도 (예: 2026)"),
+        OpenApiParameter("month", int, required=True, description="조회 월 (1-12)"),
+    ],
+    responses={200: CalendarResponseSerializer},
+)
 class CalendarView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -53,6 +75,12 @@ class CalendarView(APIView):
         return Response(calendar_data(request.user.group, year, month))
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter("session_id", str, required=True, description="비교할 세션 ID"),
+    ],
+    responses={200: StudyComparisonResponseSerializer},
+)
 class StudyComparisonView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -63,6 +91,13 @@ class StudyComparisonView(APIView):
         return Response(study_comparison(request.user.group, session_id))
 
 
+@extend_schema_view(
+    get=extend_schema(responses={200: ProblemAnalysisItemSerializer(many=True)}),
+    post=extend_schema(
+        request=ProblemAnalysisRequestSerializer,
+        responses={201: ProblemAnalysisCreateResponseSerializer},
+    ),
+)
 class ProblemAnalysisView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -81,6 +116,12 @@ class ProblemAnalysisView(APIView):
         return Response(ProblemAnalysisItemSerializer(qs, many=True).data)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter("period", str, default="monthly", description="기간 (현재 echo-only, 항상 전체 기간 반환)"),
+    ],
+    responses={200: GrowthReportResponseSerializer},
+)
 class GrowthReportView(APIView):
     permission_classes = [IsAuthenticated]
 

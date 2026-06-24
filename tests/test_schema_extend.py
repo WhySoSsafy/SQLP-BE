@@ -65,3 +65,32 @@ def test_concept_detail_has_related_problems():
     get = paths[detail_paths[0]]["get"]
     content = get["responses"]["200"]["content"]["application/json"]["schema"]
     assert content
+
+
+def test_calendar_has_year_month_params():
+    schema = get_schema()
+    get = schema["paths"]["/api/calendar/"]["get"]
+    param_names = [p["name"] for p in get.get("parameters", [])]
+    assert "year" in param_names
+    assert "month" in param_names
+
+
+def test_weak_concepts_response_not_empty():
+    schema = get_schema()
+    get = schema["paths"]["/api/weak-concepts/"]["get"]
+    content = get["responses"]["200"]["content"]["application/json"]["schema"]
+    assert content
+
+
+def test_growth_report_has_period_param():
+    schema = get_schema()
+    get = schema["paths"]["/api/reports/growth/"]["get"]
+    param_names = [p["name"] for p in get.get("parameters", [])]
+    assert "period" in param_names
+
+
+def test_study_comparison_has_session_id_param():
+    schema = get_schema()
+    get = schema["paths"]["/api/study-comparison/"]["get"]
+    param_names = [p["name"] for p in get.get("parameters", [])]
+    assert "session_id" in param_names
