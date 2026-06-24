@@ -1,9 +1,15 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from accounts.serializers import RegisterSerializer, UserSerializer, MeSerializer
+from accounts.schema_serializers import RegisterResponseSerializer, MeResponseSerializer
 
+@extend_schema(
+    request=RegisterSerializer,
+    responses={201: RegisterResponseSerializer},
+)
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -16,6 +22,9 @@ class RegisterView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
+@extend_schema(
+    responses={200: MeResponseSerializer},
+)
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 

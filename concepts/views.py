@@ -6,8 +6,11 @@ from rest_framework.views import APIView
 from concepts.models import Concept
 from concepts.services import concept_understanding, concept_review_recommended
 from study.models import ProblemParticipant
+from drf_spectacular.utils import extend_schema
+from concepts.schema_serializers import ConceptSummarySerializer, ConceptDetailSerializer
 
 
+@extend_schema(responses={200: ConceptSummarySerializer(many=True)})
 class ConceptListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -26,6 +29,7 @@ class ConceptListView(APIView):
         return Response(out)
 
 
+@extend_schema(responses={200: ConceptDetailSerializer})
 class ConceptDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
