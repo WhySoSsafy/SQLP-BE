@@ -39,3 +39,16 @@ class SessionInputSerializer(serializers.Serializer):
         if len(numbers) != len(set(numbers)):
             raise serializers.ValidationError("problem_number must be unique within a session.")
         return value
+
+
+class CommentInputSerializer(serializers.Serializer):
+    content = serializers.CharField(allow_blank=False, trim_whitespace=True)
+
+
+class CommentOutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    content = serializers.CharField()
+    author_id = serializers.IntegerField(allow_null=True)
+    author_name = serializers.CharField()
+    created_at = serializers.CharField()
+    is_mine = serializers.BooleanField()
