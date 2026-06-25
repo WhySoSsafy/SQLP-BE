@@ -7,10 +7,25 @@ from concepts.models import Concept
 from concepts.services import concept_understanding, concept_review_recommended
 from study.models import ProblemParticipant
 from drf_spectacular.utils import extend_schema
-from concepts.schema_serializers import ConceptSummarySerializer, ConceptDetailSerializer
+from rest_framework import status
+
+from concepts.schema_serializers import (
+    ConceptSummarySerializer,
+    ConceptDetailSerializer,
+    ConceptCreateSerializer,
+    ConceptCreateResponseSerializer,
+)
 
 
-@extend_schema(responses={200: ConceptSummarySerializer(many=True)})
+@extend_schema(
+    methods=["GET"],
+    responses={200: ConceptSummarySerializer(many=True)},
+)
+@extend_schema(
+    methods=["POST"],
+    request=ConceptCreateSerializer,
+    responses={201: ConceptCreateResponseSerializer},
+)
 class ConceptListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -27,6 +42,70 @@ class ConceptListView(APIView):
                 "reviewRecommended": concept_review_recommended(c, score),
             })
         return Response(out)
+
+    def post(self, request):
+        data = request.data
+
+        # Resolve name: accept 'name' or 'title' alias.
+        name_val = data.get("name") or data.get("title") or ""
+        # Reject non-string JSON values (number/list/dict) with 400 instead of crashing (500).
+        if not isinstance(name_val, str):
+            return Response(
+                {"detail": "name must be a string."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        name = name_val.strip()
+        if not name:
+            return Response(
+                {"detail": "name is required and must not be blank."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Accept camelCase or snake_case for array fields
+        frequent_question_types = (
+            data.get("frequentQuestionTypes")
+            or data.get("frequent_question_types")
+            or []
+        )
+        confusing_points = (
+            data.get("confusingPoints")
+            or data.get("confusing_points")
+            or []
+        )
+        wrong_patterns = (
+            data.get("wrongPatterns")
+            or data.get("wrong_patterns")
+            or []
+        )
+
+        # `or ""` normalizes explicit JSON null → "" (CharField/TextField are non-null).
+        subject = data.get("subject") or ""
+        summary = data.get("summary") or ""
+
+        concept, _ = Concept.objects.update_or_create(
+            group=request.user.group,
+            name=name,
+            defaults={
+                "subject": subject,
+                "summary": summary,
+                "frequent_question_types": frequent_question_types,
+                "confusing_points": confusing_points,
+                "wrong_patterns": wrong_patterns,
+            },
+        )
+
+        return Response(
+            {
+                "id": concept.id,
+                "name": concept.name,
+                "subject": concept.subject,
+                "summary": concept.summary,
+                "frequentQuestionTypes": concept.frequent_question_types,
+                "confusingPoints": concept.confusing_points,
+                "wrongPatterns": concept.wrong_patterns,
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 @extend_schema(responses={200: ConceptDetailSerializer})

@@ -62,3 +62,17 @@ class ProblemParticipant(models.Model):
     @property
     def wrong_answer_id(self):
         return f"{self.problem_id}::{self.name}"
+
+
+class Comment(models.Model):
+    participant = models.ForeignKey(
+        ProblemParticipant, on_delete=models.CASCADE, related_name="comments"
+    )
+    author = models.ForeignKey(
+        "accounts.User", null=True, on_delete=models.SET_NULL, related_name="comments"
+    )
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]

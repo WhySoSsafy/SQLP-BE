@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from study.models import StudySession
-from study.serializers import SessionInputSerializer
+from study.models import StudySession, ProblemParticipant, Comment
+from study.serializers import SessionInputSerializer, CommentInputSerializer
 from study.services.serialize import session_detail, session_summary
 from study.services.session_create import create_session
 from study.services.wrong_answers import wrong_answer_queryset, serialize_wrong_answer
@@ -140,6 +140,17 @@ class WrongAnswerDetailView(APIView):
         return Response({"ok": True, "id": wrong_answer_id, "done": pp.done})
 
 
+def _comment_dict(c, user):
+    return {
+        "id": c.id,
+        "content": c.content,
+        "author_id": c.author_id,
+        "author_name": c.author.name if c.author else "(알 수 없음)",
+        "created_at": c.created_at.isoformat().replace("+00:00", "Z"),
+        "is_mine": c.author_id == user.id,
+    }
+
+
 @extend_schema(
     request=SessionCreateRequestSerializer,
     responses={200: ValidateResponseSerializer},
@@ -165,3 +176,38 @@ class ValidateView(APIView):
             "conceptTags": concept_tags,
         }
         return Response({"ok": True, "preview": preview})
+
+
+class ParticipantCommentsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def _participant(self, request, participant_id):
+        return get_object_or_404(
+            ProblemParticipant.objects.filter(problem__session__group=request.user.group),
+            id=participant_id,
+        )
+
+    def get(self, request, participant_id):
+        p = self._participant(request, participant_id)
+        return Response([_comment_dict(c, request.user) for c in p.comments.select_related("author")])
+
+    def post(self, request, participant_id):
+        p = self._participant(request, participant_id)
+        s = CommentInputSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        c = Comment.objects.create(participant=p, author=request.user, content=s.validated_data["content"])
+        return Response(_comment_dict(c, request.user), status=status.HTTP_201_CREATED)
+
+
+class CommentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, comment_id):
+        c = get_object_or_404(
+            Comment.objects.filter(participant__problem__session__group=request.user.group),
+            id=comment_id,
+        )
+        if c.author_id != request.user.id and not request.user.is_staff:
+            return Response({"ok": False, "message": "본인 댓글만 삭제할 수 있습니다."}, status=403)
+        c.delete()
+        return Response({"ok": True})

@@ -11,6 +11,7 @@ def session_detail(session):
             "concepts": [c.name for c in problem.concepts.all()],
             "solution_summary": problem.solution_summary,
             "participants": [{
+                "id": pp.id,
                 "name": pp.name,
                 "is_correct": pp.is_correct,
                 "understanding": pp.understanding,
